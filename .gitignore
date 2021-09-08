@@ -1,5 +1,5 @@
-root/*
+ca/*
 certs/*
 
-!root/.gitkeep
+!ca/.gitkeep
 !certs/.gitkeep

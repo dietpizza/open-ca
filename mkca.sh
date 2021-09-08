@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
-echo "Enter CA name:"
-read -i NAME
-
-if [ -z $NAME] then
-    NAME="KepSign"
+if [ $# -eq 0 ]
+then 
+   echo "Usage: $0 cert-name"
+   exit 1
 fi
 
-DIR="root/$NAME"
+NAME=$1
+DIR="ca/$NAME"
 
 if [ -d $DIR ] 
 then
-    echo "Authority already exists -_-"
+    echo "Certificate Authority already exists -_-"
     exit 1
 else
     mkdir -p $DIR
@@ -25,7 +25,7 @@ else
         -newkey rsa:2048\
         -keyout "$DIR/$NAME.key"\
         -out "$DIR/$NAME.pem"\
-        -subj "/C=BR/CN=LocalCA"
+        -subj "/C=IN/O=$NAME/OU=Enginnering/CN=$NAME"
 
     openssl x509\
         -outform pem\
