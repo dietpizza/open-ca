@@ -1,2 +1,5 @@
-RootCA
-certs
+root/*
+certs/*
+
+!root/.gitkeep
+!certs/.gitkeep

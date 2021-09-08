@@ -2,8 +2,8 @@
 
 NAME=$1
 DIR="certs/$NAME"
-ROOT_CA="../../RootCA/RootCA"
-DOMAIN="../../domains.ext"
+ROOT_DIR="root"
+DOMAIN="domains.ext"
 
 if [ $# -eq 0 ]
 then 
@@ -13,34 +13,34 @@ fi
 
 if [ -d $DIR ] 
 then
-    echo "Certificate Already Exists!"
+    echo "Certificate already exists -_-"
+    exit 1
 else
     mkdir -p $DIR
-    cd $DIR
 
     openssl req\
         -new\
         -nodes\
         -newkey rsa:2048\
-        -keyout $NAME.key\
-        -out $NAME.csr\
-        -subj "/C=BR/ST=BAHIA/L=SSA/O=LocalCert/CN=localhost.local"
+        -keyout $DIR/cert.key\
+        -out $DIR/cert.csr\
+        -subj "/C=BR/ST=BAHIA/L=SSA/O=LocalCert/CN=localhost"
 
     openssl x509\
         -req\
         -sha256\
-        -days 1024\
-        -in $NAME.csr\
-        -CA $ROOT_CA.pem\
-        -CAkey $ROOT_CA.key\
+        -days 3650\
+        -in $DIR/cert.csr\
+        -CA $ROOT_DIR/root.pem\
+        -CAkey $ROOT_DIR/root.key\
         -CAcreateserial\
         -extfile $DOMAIN\
-        -out $NAME.crt
+        -out $DIR/cert.crt
 
     openssl pkcs12\
         -export\
-        -inkey $NAME.key\
-        -in $NAME.crt\
-        -out $NAME.p12
+        -inkey $DIR/cert.key\
+        -in $DIR/cert.crt\
+        -out $DIR/cert.p12
 fi
 
