@@ -2,7 +2,7 @@
 
 if [ $# -lt 2 ]
 then 
-   echo "Usage: $0 <Certificate Name> <Certificate Authority>"
+   echo "Usage: $0 <cert-name> <ca-name>"
    exit 1
 fi
 
@@ -16,22 +16,29 @@ CA_FILE="$CA_DIR/$CA_NAME"
 
 DOMAINS="domains.ext"
 
-if [ ! -d $CA_DIR ]
-then
-    read -n1 -p "The Authority '$CA_NAME' does not exist. Create it now? [y/n]: " CHOICE
-    echo
-    case $CHOICE in 
-        [Yy] ) ./mkca.sh $CA_NAME;;
-        [Nn] ) exit 1;;
-        * ) echo "Please answer yes or no."; exit 1;;
-    esac
-fi
+function mkca () {
+    mkdir -p $CA_DIR
 
-if [ -d $DIR ] 
-then
-    echo "Certificate already exists -_-"
-    exit 1
-else
+    openssl req\
+        -x509\
+        -nodes\
+        -new\
+        -sha256\
+        -days 3650\
+        -newkey rsa:2048\
+        -keyout "$CA_DIR/$CA_NAME.key"\
+        -out "$CA_DIR/$CA_NAME.pem"\
+        -subj "/C=IN/O=$CA_NAME/OU=Enginnering/CN=$CA_NAME"
+
+    openssl x509\
+        -outform pem\
+        -in "$CA_DIR/$CA_NAME.pem"\
+        -out "$CA_DIR/$CA_NAME.crt"
+    echo
+    echo "Certificate Authority '$CA_NAME' created."
+}
+
+function mkcert () {
     mkdir -p $DIR
 
     openssl req\
@@ -58,5 +65,27 @@ else
         -inkey $FILE.key\
         -in $FILE.crt\
         -out $FILE.p12
+
+    echo
+    echo "Certificate '$NAME' created."
+}
+
+if [ -d $DIR ] 
+then
+    echo "Certificate '$NAME' already exists -_-"
+    exit 1
+else
+    if [ ! -d $CA_DIR ]
+    then
+        read -n1 -p "The Authority '$CA_NAME' does not exist. Create it now? [y/n]: " CHOICE
+        echo
+        case $CHOICE in 
+            [Yy] ) mkca;;
+            [Nn] ) exit 1;;
+            * ) echo "Please answer yes or no."; exit 1;;
+        esac
+    fi
+
+    mkcert
 fi
 
