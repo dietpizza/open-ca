@@ -21,9 +21,9 @@ then
     read -n1 -p "The Authority '$CA_NAME' does not exist. Create it now? [y/n]: " CHOICE
     echo
     case $CHOICE in 
-        [Yy]* ) ./mkca.sh $CA_NAME;;
-        [Nn]* ) exit 1;;
-        * ) echo "Please answer yes or no.";;
+        [Yy] ) ./mkca.sh $CA_NAME;;
+        [Nn] ) exit 1;;
+        * ) echo "Please answer yes or no."; exit 1;;
     esac
 fi
 
