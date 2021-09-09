@@ -48,6 +48,18 @@ function mkcert () {
         -keyout $FILE.key\
         -out $FILE.csr\
         -subj "/C=IN/ST=West Bengal/L=SSA/O=$NAME/OU=Engineering/CN=$NAME"
+    
+    cp $DOMAINS $DIR/
+
+    read -p "Enter domain names (eg. echo.org *.echo.org): " -a DNS
+    read -p "Enter IPs (eg. 127.0.0.1 192.168.56.128): " -a IP
+
+    for i in ${!DNS[@]}; do
+        echo "DNS.$(($i + 1)) = ${DNS[$i]}" >> $DIR/$DOMAINS
+    done
+    for i in ${!IP[@]}; do
+        echo "IP.$(($i + 1)) = ${IP[$i]}" >> $DIR/$DOMAINS
+    done
 
     openssl x509\
         -req\
@@ -57,7 +69,7 @@ function mkcert () {
         -CA $CA_FILE.pem\
         -CAkey $CA_FILE.key\
         -CAcreateserial\
-        -extfile $DOMAINS\
+        -extfile $DIR/$DOMAINS\
         -out $FILE.crt
 
     openssl pkcs12\

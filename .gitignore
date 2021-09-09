@@ -1,5 +1,5 @@
 ca/*
 certs/*
-
+test.*
 !ca/.gitkeep
 !certs/.gitkeep
